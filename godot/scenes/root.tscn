@@ -1,9 +1,19 @@
-[gd_scene load_steps=2 format=3 uid="uid://b3no8r83os3vc"]
+[gd_scene load_steps=3 format=3 uid="uid://b3no8r83os3vc"]
 
 [ext_resource type="Texture2D" uid="uid://bfdcfftusx3kx" path="res://icon.svg" id="1_b6r2b"]
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_dmg7r"]
+
 [node name="Root" type="Node2D"]
 
-[node name="Thingy" type="Player" parent="."]
+[node name="Block" type="Block" parent="."]
 position = Vector2(200, 200)
+
+[node name="Sprite2D" type="Sprite2D" parent="Block"]
 texture = ExtResource("1_b6r2b")
+
+[node name="Area2D" type="Area2D" parent="Block"]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Block/Area2D"]
+scale = Vector2(6.5, 6.5)
+shape = SubResource("RectangleShape2D_dmg7r")
