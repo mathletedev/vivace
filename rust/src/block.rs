@@ -1,26 +1,42 @@
 use godot::{
-    classes::{Area2D, InputEvent, InputEventMouse},
+    classes::{Area2D, InputEvent, InputEventMouse, Material, Sprite2D},
     prelude::*,
 };
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
 struct Block {
+    #[export]
+    outline: Option<Gd<Material>>,
+
     hovered: bool,
     drag_offset: Option<Vector2>,
+
+    sprite2d: Option<Gd<Sprite2D>>,
     base: Base<Node2D>,
 }
 
 #[godot_api]
 impl Block {
+    fn set_outlined(&mut self, outlined: bool) {
+        assert!(self.sprite2d.is_some());
+        self.sprite2d.as_mut().unwrap().set_material(if outlined {
+            self.outline.clone()
+        } else {
+            None
+        });
+    }
+
     #[func]
     fn on_mouse_entered(&mut self) {
         self.hovered = true;
+        self.set_outlined(true);
     }
 
     #[func]
     fn on_mouse_exited(&mut self) {
         self.hovered = false;
+        self.set_outlined(false);
     }
 }
 
@@ -28,13 +44,19 @@ impl Block {
 impl INode2D for Block {
     fn init(base: Base<Node2D>) -> Self {
         Self {
+            outline: None,
+
             hovered: false,
             drag_offset: None,
+
+            sprite2d: None,
             base,
         }
     }
 
     fn ready(&mut self) {
+        self.sprite2d = Some(self.base().get_node_as::<Sprite2D>("Sprite2D"));
+
         let mut collider = self.base().get_node_as::<Area2D>("Area2D");
 
         collider.connect(
@@ -51,9 +73,11 @@ impl INode2D for Block {
         if let Ok(event) = event.try_cast::<InputEventMouse>() {
             if event.is_action_pressed("mouse_left".into()) {
                 self.drag_offset = Some(event.get_position() - self.base().get_position());
+                self.set_outlined(false);
             }
             if event.is_action_released("mouse_left".into()) {
                 self.drag_offset = None;
+                self.set_outlined(true);
             }
 
             if let Some(drag_offset) = self.drag_offset {

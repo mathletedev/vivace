@@ -1,12 +1,14 @@
-[gd_scene load_steps=3 format=3 uid="uid://b3no8r83os3vc"]
+[gd_scene load_steps=4 format=3 uid="uid://b3no8r83os3vc"]
 
 [ext_resource type="Texture2D" uid="uid://bfdcfftusx3kx" path="res://icon.svg" id="1_b6r2b"]
+[ext_resource type="Material" uid="uid://dhr61uusqghga" path="res://shaders/outline.tres" id="1_cjb8v"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dmg7r"]
 
 [node name="Root" type="Node2D"]
 
 [node name="Block" type="Block" parent="."]
+outline = ExtResource("1_cjb8v")
 position = Vector2(200, 200)
 
 [node name="Sprite2D" type="Sprite2D" parent="Block"]
