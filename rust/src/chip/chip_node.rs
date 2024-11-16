@@ -3,7 +3,7 @@ use godot::{
     prelude::*,
 };
 
-use super::logic::Logic;
+use super::Chip;
 
 #[derive(GodotClass)]
 #[class(base=Node2D)]
@@ -17,7 +17,8 @@ struct ChipNode {
     sprite2d: Option<Gd<Sprite2D>>,
     base: Base<Node2D>,
 
-    chip: Logic,
+    chip: Chip,
+    top_level: bool,
 }
 
 #[godot_api]
@@ -35,12 +36,16 @@ impl ChipNode {
     fn on_mouse_entered(&mut self) {
         self.hovered = true;
         self.set_outlined(true);
+
+        *self.chip.inputs[0].borrow_mut() = true;
     }
 
     #[func]
     fn on_mouse_exited(&mut self) {
         self.hovered = false;
         self.set_outlined(false);
+
+        *self.chip.inputs[0].borrow_mut() = false;
     }
 }
 
@@ -56,7 +61,8 @@ impl INode2D for ChipNode {
             sprite2d: None,
             base,
 
-            chip: Logic::default(),
+            chip: Chip::from_gate(super::Gate::Not),
+            top_level: true,
         }
     }
 
@@ -73,6 +79,12 @@ impl INode2D for ChipNode {
             "mouse_exited".into(),
             self.base().callable("on_mouse_exited"),
         );
+    }
+
+    fn process(&mut self, _delta: f64) {
+        if self.top_level {
+            self.chip.update();
+        }
     }
 
     fn input(&mut self, event: Gd<InputEvent>) {
