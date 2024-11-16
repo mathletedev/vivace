@@ -3,9 +3,11 @@ use godot::{
     prelude::*,
 };
 
+use super::logic::Logic;
+
 #[derive(GodotClass)]
 #[class(base=Node2D)]
-struct Block {
+struct ChipNode {
     #[export]
     outline: Option<Gd<Material>>,
 
@@ -14,10 +16,12 @@ struct Block {
 
     sprite2d: Option<Gd<Sprite2D>>,
     base: Base<Node2D>,
+
+    chip: Logic,
 }
 
 #[godot_api]
-impl Block {
+impl ChipNode {
     fn set_outlined(&mut self, outlined: bool) {
         assert!(self.sprite2d.is_some());
         self.sprite2d.as_mut().unwrap().set_material(if outlined {
@@ -41,7 +45,7 @@ impl Block {
 }
 
 #[godot_api]
-impl INode2D for Block {
+impl INode2D for ChipNode {
     fn init(base: Base<Node2D>) -> Self {
         Self {
             outline: None,
@@ -51,6 +55,8 @@ impl INode2D for Block {
 
             sprite2d: None,
             base,
+
+            chip: Logic::default(),
         }
     }
 
