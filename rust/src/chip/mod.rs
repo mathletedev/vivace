@@ -1,6 +1,5 @@
 pub mod chip_node;
 
-use godot::prelude::*;
 use std::{cell::RefCell, rc::Rc};
 
 pub enum Gate {
@@ -38,10 +37,6 @@ impl Chip {
     }
 
     pub fn update(&self) {
-        for child in &self.children {
-            child.update();
-        }
-
         if let Some(gate) = &self.gate {
             match gate {
                 Gate::And => {
@@ -52,6 +47,12 @@ impl Chip {
                     *self.outputs[0].borrow_mut() = !*self.inputs[0].borrow();
                 }
             }
+
+            return;
+        }
+
+        for child in &self.children {
+            child.update();
         }
     }
 }
